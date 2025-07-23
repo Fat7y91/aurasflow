@@ -1,11 +1,10 @@
-from flask import Flask, render_template, request, Markup
-from deepseek import DeepSeek
+from flask import Flask, render_template, request
+from markupsafe import Markup
+import requests
+import json
 import os
 
 app = Flask(__name__)
-
-# استخدم مفتاح API من المتغيرات البيئية
-deepseek = DeepSeek(api_key=os.environ.get("DEEPSEEK_API_KEY"))
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -31,19 +30,40 @@ def index():
 Your answer should be clear, well-structured, and helpful for designers.
 """
 
-        response = deepseek.chat.completions.create(
-            model="deepseek-chat",
-            messages=[{
-                "role": "system",
-                "content": "You are a creative UI/UX designer assistant."
+        # إعداد الطلب لـ DeepSeek API
+        DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY")
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {DEEPSEEK_API_KEY}"
+        }
+
+        payload = {
+            "model":
+            "deepseek-chat",
+            "messages": [{
+                "role":
+                "system",
+                "content":
+                "You are a creative UI/UX designer assistant."
             }, {
                 "role": "user",
                 "content": prompt
             }],
-            temperature=temperature,
-            max_tokens=600)
+            "temperature":
+            temperature,
+            "max_tokens":
+            600
+        }
 
-        result = response.choices[0].message.content.strip()
+        response = requests.post("https://api.deepseek.com/chat/completions",
+                                 headers=headers,
+                                 data=json.dumps(payload))
+
+        if response.status_code == 200:
+            result = response.json()["choices"][0]["message"]["content"].strip(
+            )
+        else:
+            result = "حدث خطأ أثناء الاتصال بـ DeepSeek API."
 
     return render_template("index.html",
                            lang=lang,
