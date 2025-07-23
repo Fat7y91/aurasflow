@@ -5,6 +5,7 @@ import json
 import os
 
 app = Flask(__name__)
+app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-production")
 
 
 @app.route("/", methods=["GET", "POST"])

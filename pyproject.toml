@@ -1,9 +1,17 @@
+[project]
+name = "aurasflow"
+version = "0.1.0"
+description = "A bilingual Flask web application for AI-powered marketing design generation"
+readme = "README.md"
+requires-python = ">=3.11"
+
 dependencies = [
   "email-validator>=2.2.0",
   "flask>=3.1.1",
-  "fla>=3sk-sqlalchemy.1.1",
+  "flask-sqlalchemy>=3.1.1",
   "fpdf==1.7.2",
   "gunicorn>=23.0.0",
+  "markupsafe>=3.0.2",
   "openai>=1.97.1",
   "psycopg2-binary>=2.9.10",
   "python-dotenv>=1.1.1",
