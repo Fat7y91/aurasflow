@@ -1,100 +1,106 @@
 <!DOCTYPE html>
-<html dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}">
+<html lang="{{ lang }}" dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ translations[lang]['title'] }}</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Design Generator Pro</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='fonts/fonts.css') }}">
+  <script>
+    // وضع الإبداع / التركيز حسب الحالة الحالية
+    document.documentElement.className = localStorage.getItem('mode') || 'focus-mode';
+  </script>
 </head>
 <body>
+  <div class="container">
+    <header>
+      <div class="top-controls">
+        <!-- اختيار الوضع -->
+        <div class="mode-switcher">
+          <a href="#" class="mode-toggle" data-mode="focus-mode">
+            🎯 {{ 'وضع التركيز' if lang == 'ar' else 'Focus Mode' }}
+          </a>
+          <a href="#" class="mode-toggle" data-mode="creative-mode">
+            🎨 {{ 'وضع الإبداع' if lang == 'ar' else 'Creative Mode' }}
+          </a>
+        </div>
 
-<!-- شاشة التحميل -->
-<div class="splash-screen" id="splash">
-  <div class="logo-loader">
-    <div class="pulse-circle"></div>
-    <div class="aura-text">Aurasflow</div>
-  </div>
-</div>
-
-<div class="container" id="main-content" style="display: none;">
-  <header>
-    <div class="lang-switcher">
-      <a href="/set_lang/ar" {% if lang == 'ar' %}class="active"{% endif %}>عربي</a>
-      <a href="/set_lang/en" {% if lang == 'en' %}class="active"{% endif %}>English</a>
-    </div>
-    <h1>{{ translations[lang]['title'] }}</h1>
-  </header>
-
-  <div class="main-content">
-    <form action="/generate" method="POST">
-      <div class="form-group">
-        <textarea name="prompt" placeholder="{{ translations[lang]['placeholder'] }}" required>{{ prompt if prompt else '' }}</textarea>
-      </div>
-
-      <div class="form-group">
-        <label>{{ translations[lang]['creativity_label'] }}</label>
-        <div class="radio-options">
-          <label><input type="radio" name="creativity" value="low" {% if creativity == 'low' %}checked{% endif %}> {{ translations[lang]['creativity_low'] }}</label>
-          <label><input type="radio" name="creativity" value="medium" {% if creativity == 'medium' or not creativity %}checked{% endif %}> {{ translations[lang]['creativity_medium'] }}</label>
-          <label><input type="radio" name="creativity" value="high" {% if creativity == 'high' %}checked{% endif %}> {{ translations[lang]['creativity_high'] }}</label>
+        <!-- اختيار اللغة -->
+        <div class="lang-switcher">
+          <a href="{{ url_for('index', lang='ar') }}" class="{{ 'active' if lang == 'ar' else '' }}">العربية 🇴🇲</a>
+          <a href="{{ url_for('index', lang='en') }}" class="{{ 'active' if lang == 'en' else '' }}">English 🇬🇧</a>
         </div>
       </div>
+      <h1>AI Design Generator Pro</h1>
+    </header>
 
-      <button type="submit">{{ translations[lang]['button'] | safe }}</button>
-    </form>
+    <main class="main-content">
+      <form method="POST">
+        <div class="form-group">
+          <textarea name="idea" placeholder="{{ 'اكتب وصف التصميم المطلوب...' if lang == 'ar' else 'Enter your design description...' }}">{{ idea if idea else '' }}</textarea>
+        </div>
 
-    {% if result %}
-    <div class="result-container">
-      <h2 class="result-title">{{ translations[lang]['result_title'] }}</h2>
-      <div class="design-result" id="design-result">{{ result }}</div>
+        <div class="form-group">
+          <label>{{ 'درجة الإبداع' if lang == 'ar' else 'Creativity Level' }} 🧠:</label>
+          <div class="radio-options">
+            <label><input type="radio" name="creativity" value="low" {% if creativity == 'low' %}checked{% endif %}> {{ 'منخفض' if lang == 'ar' else 'Low' }}</label>
+            <label><input type="radio" name="creativity" value="medium" {% if creativity == 'medium' %}checked{% endif %}> {{ 'متوسط' if lang == 'ar' else 'Medium' }}</label>
+            <label><input type="radio" name="creativity" value="high" {% if creativity == 'high' %}checked{% endif %}> {{ 'مرتفع' if lang == 'ar' else 'High' }}</label>
+          </div>
+        </div>
 
-      <div class="button-group">
-        <button onclick="copyToClipboard()"><i class="fas fa-copy"></i> {{ translations[lang]['copy'] }}</button>
-        <button onclick="downloadPDF()"><i class="fas fa-file-pdf"></i> {{ translations[lang]['download'] }}</button>
-      </div>
-    </div>
-    {% endif %}
+        <button type="submit">
+          ✏️ {{ 'أنشئ التصميم' if lang == 'ar' else 'Generate Design' }}
+        </button>
+      </form>
+
+      {% if result %}
+        <div class="result-container">
+          <div class="result-title">{{ 'نتيجة التصميم' if lang == 'ar' else 'Design Result' }}:</div>
+          <div class="design-result" id="design-result">{{ result }}</div>
+          <div class="result-actions">
+            <button class="copy-btn" onclick="copyText()">
+              📋 {{ 'نسخ' if lang == 'ar' else 'Copy' }}
+            </button>
+            <button class="pdf-btn" onclick="downloadPDF()">
+              📄 {{ 'تحميل PDF' if lang == 'ar' else 'Download PDF' }}
+            </button>
+          </div>
+        </div>
+      {% endif %}
+    </main>
+
+    <footer>
+      {{ 'تم التطوير بحب باستخدام' if lang == 'ar' else 'Crafted with ❤️ using' }} AurasFlow & DeepSeek
+    </footer>
   </div>
 
-  <footer>
-    <p>{{ translations[lang]['footer'] }}</p>
-  </footer>
-</div>
-
-<!-- Scripts -->
-<script>
-  // شاشة التحميل
-  window.addEventListener("load", () => {
-    setTimeout(() => {
-      document.getElementById("splash").style.display = "none";
-      document.getElementById("main-content").style.display = "block";
-    }, 1200);
-  });
-
-  function copyToClipboard() {
-    const text = document.getElementById("design-result").innerText;
-    navigator.clipboard.writeText(text).then(() => {
-      alert("{{ 'تم النسخ!' if lang == 'ar' else 'Copied!' }}");
+  <script>
+    // التحكم في الوضع (إبداع / تركيز)
+    document.querySelectorAll('.mode-toggle').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        const mode = btn.getAttribute('data-mode');
+        document.documentElement.className = mode;
+        localStorage.setItem('mode', mode);
+      });
     });
-  }
 
-  function downloadPDF() {
-    const element = document.getElementById("design-result");
-    const opt = {
-      margin: 0.5,
-      filename: 'Aurasflow_Result.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: {},
-      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-    };
-    html2pdf().from(element).set(opt).save();
-  }
-</script>
+    // نسخ النتيجة
+    function copyText() {
+      const text = document.getElementById("design-result").innerText;
+      navigator.clipboard.writeText(text).then(() => alert("Copied!"));
+    }
 
-<!-- PDF Library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
-
+    // تحميل PDF
+    function downloadPDF() {
+      const text = document.getElementById("design-result").innerText;
+      const blob = new Blob([text], { type: 'application/pdf' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = "design.pdf";
+      link.click();
+    }
+  </script>
 </body>
 </html>
