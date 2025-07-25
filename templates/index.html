@@ -1,106 +1,139 @@
 <!DOCTYPE html>
-<html lang="{{ lang }}" dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Design Generator Pro</title>
+  <title>AiDesignFlow | صانع الأفكار الإبداعية</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='fonts/fonts.css') }}">
-  <script>
-    // وضع الإبداع / التركيز حسب الحالة الحالية
-    document.documentElement.className = localStorage.getItem('mode') || 'focus-mode';
-  </script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
+
 <body>
   <div class="container">
-    <header>
-      <div class="top-controls">
-        <!-- اختيار الوضع -->
-        <div class="mode-switcher">
-          <a href="#" class="mode-toggle" data-mode="focus-mode">
-            🎯 {{ 'وضع التركيز' if lang == 'ar' else 'Focus Mode' }}
-          </a>
-          <a href="#" class="mode-toggle" data-mode="creative-mode">
-            🎨 {{ 'وضع الإبداع' if lang == 'ar' else 'Creative Mode' }}
-          </a>
-        </div>
+    <h1 class="title">🎨 AiDesignFlow</h1>
 
-        <!-- اختيار اللغة -->
-        <div class="lang-switcher">
-          <a href="{{ url_for('index', lang='ar') }}" class="{{ 'active' if lang == 'ar' else '' }}">العربية 🇴🇲</a>
-          <a href="{{ url_for('index', lang='en') }}" class="{{ 'active' if lang == 'en' else '' }}">English 🇬🇧</a>
-        </div>
+    <form id="designForm">
+      <textarea name="prompt" placeholder="اكتب فكرة التصميم هنا..." required></textarea>
+
+      <div class="options-row">
+        <label>درجة الإبداع:</label>
+        <select name="creativity">
+          <option value="منخفض">منخفض</option>
+          <option value="متوسط" selected>متوسط</option>
+          <option value="مرتفع">مرتفع</option>
+        </select>
       </div>
-      <h1>AI Design Generator Pro</h1>
-    </header>
 
-    <main class="main-content">
-      <form method="POST">
-        <div class="form-group">
-          <textarea name="idea" placeholder="{{ 'اكتب وصف التصميم المطلوب...' if lang == 'ar' else 'Enter your design description...' }}">{{ idea if idea else '' }}</textarea>
-        </div>
+      <div class="options-row">
+        <label>نمط التفكير:</label>
+        <select name="mode">
+          <option value="focused" selected>مركّز</option>
+          <option value="creative">إبداعي</option>
+        </select>
+      </div>
 
-        <div class="form-group">
-          <label>{{ 'درجة الإبداع' if lang == 'ar' else 'Creativity Level' }} 🧠:</label>
-          <div class="radio-options">
-            <label><input type="radio" name="creativity" value="low" {% if creativity == 'low' %}checked{% endif %}> {{ 'منخفض' if lang == 'ar' else 'Low' }}</label>
-            <label><input type="radio" name="creativity" value="medium" {% if creativity == 'medium' %}checked{% endif %}> {{ 'متوسط' if lang == 'ar' else 'Medium' }}</label>
-            <label><input type="radio" name="creativity" value="high" {% if creativity == 'high' %}checked{% endif %}> {{ 'مرتفع' if lang == 'ar' else 'High' }}</label>
-          </div>
-        </div>
+      <div class="options-row">
+        <label>النموذج:</label>
+        <select name="model">
+          <option value="DeepSeek" selected>DeepSeek</option>
+          <option value="ChatGPT">ChatGPT</option>
+        </select>
+      </div>
 
-        <button type="submit">
-          ✏️ {{ 'أنشئ التصميم' if lang == 'ar' else 'Generate Design' }}
-        </button>
-      </form>
+      <div class="options-row">
+        <label>لغة الواجهة:</label>
+        <select name="ui_language">
+          <option value="ar" selected>العربية</option>
+          <option value="en">English</option>
+        </select>
+      </div>
 
-      {% if result %}
-        <div class="result-container">
-          <div class="result-title">{{ 'نتيجة التصميم' if lang == 'ar' else 'Design Result' }}:</div>
-          <div class="design-result" id="design-result">{{ result }}</div>
-          <div class="result-actions">
-            <button class="copy-btn" onclick="copyText()">
-              📋 {{ 'نسخ' if lang == 'ar' else 'Copy' }}
-            </button>
-            <button class="pdf-btn" onclick="downloadPDF()">
-              📄 {{ 'تحميل PDF' if lang == 'ar' else 'Download PDF' }}
-            </button>
-          </div>
-        </div>
-      {% endif %}
-    </main>
+      <button type="submit">🚀 إنشاء التصميم</button>
+    </form>
 
-    <footer>
-      {{ 'تم التطوير بحب باستخدام' if lang == 'ar' else 'Crafted with ❤️ using' }} AurasFlow & DeepSeek
-    </footer>
+    <div id="loading" class="loader" style="display:none;">
+      <p id="loading-text">0%</p>
+    </div>
+
+    <div id="resultBox" style="display:none;">
+      <h3>📋 النتيجة:</h3>
+      <pre id="resultText"></pre>
+      <button id="copyBtn">📋 نسخ</button>
+    </div>
+
+    <div id="toast" class="toast">✅ تم النسخ!</div>
   </div>
 
   <script>
-    // التحكم في الوضع (إبداع / تركيز)
-    document.querySelectorAll('.mode-toggle').forEach(btn => {
-      btn.addEventListener('click', e => {
-        e.preventDefault();
-        const mode = btn.getAttribute('data-mode');
-        document.documentElement.className = mode;
-        localStorage.setItem('mode', mode);
+    const progressPhrases = [
+      "🧠 جاري تحليل الفكرة...",
+      "💡 ابتكار أفكار تصميم جديدة...",
+      "🎨 تجهيز التصميم الإبداعي...",
+      "📋 تنسيق النتائج النهائية..."
+    ];
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.className = "toast show";
+      setTimeout(() => {
+        toast.className = "toast";
+      }, 2500);
+    }
+
+    $("#designForm").submit(function (e) {
+      e.preventDefault();
+      $("#resultBox").hide();
+      $("#loading").show();
+      $("#loading-text").text("0%");
+      let progress = 0;
+      let phraseIndex = 0;
+
+      const loadingInterval = setInterval(() => {
+        if (progress < 100) {
+          progress += 2;
+          $("#loading-text").text(progress + "% " + progressPhrases[phraseIndex]);
+          phraseIndex = (phraseIndex + 1) % progressPhrases.length;
+        }
+      }, 200);
+
+      const formData = {
+        prompt: $("textarea[name='prompt']").val(),
+        creativity: $("select[name='creativity']").val(),
+        mode: $("select[name='mode']").val(),
+        model: $("select[name='model']").val(),
+        ui_language: $("select[name='ui_language']").val()
+      };
+
+      $.ajax({
+        url: "/generate",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(formData),
+        success: function (data) {
+          clearInterval(loadingInterval);
+          $("#loading").hide();
+          if (data.result) {
+            $("#resultText").text(data.result);
+            $("#resultBox").show();
+          } else {
+            $("#resultText").text("⚠️ لم يتم استلام نتيجة.");
+            $("#resultBox").show();
+          }
+        },
+        error: function () {
+          clearInterval(loadingInterval);
+          $("#loading").hide();
+          $("#resultText").text("⚠️ حدث خطأ أثناء الاتصال بالخادم.");
+          $("#resultBox").show();
+        }
       });
     });
 
-    // نسخ النتيجة
-    function copyText() {
-      const text = document.getElementById("design-result").innerText;
-      navigator.clipboard.writeText(text).then(() => alert("Copied!"));
-    }
-
-    // تحميل PDF
-    function downloadPDF() {
-      const text = document.getElementById("design-result").innerText;
-      const blob = new Blob([text], { type: 'application/pdf' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = "design.pdf";
-      link.click();
-    }
+    $("#copyBtn").click(function () {
+      navigator.clipboard.writeText($("#resultText").text()).then(() => {
+        showToast("✅ تم نسخ النتيجة!");
+      });
+    });
   </script>
 </body>
 </html>
