@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}نتائج المحتوى - {{ project.name }} - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>نتائج المحتوى لمشروع: {{ project.name }}</h2>
+        <a href="{{ url_for('project_detail', project_id=project.id) }}" class="btn btn-outline-secondary">
+            <i class="fa-solid fa-arrow-left me-1"></i>
+            العودة للمشروع
+        </a>
+    </div>
+    
+    <div class="alert alert-success">
+        <i class="fa-solid fa-circle-check me-2"></i>
+        تم توليد المحتوى بنجاح! التكلفة: {{ total_cost }} نقطة - الرصيد المتبقي: {{ current_user.credits }} نقطة
+    </div>
+    
+    {% if result.designs and result.designs|length > 0 %}
+    <div class="card mb-4">
+        <div class="card-header bg-white">
+            <h4 class="mb-0">
+                <i class="fa-solid fa-paintbrush me-2 text-primary"></i>
+                التصميمات ({{ result.designs|length }})
+            </h4>
+        </div>
+        <div class="card-body">
+            <div class="list-group">
+                {% for design in result.designs %}
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-1">تصميم {{ loop.index }}</h5>
+                            <p class="mb-0">{{ design }}</p>
+                        </div>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary">نسخ</button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if result.videos and result.videos|length > 0 %}
+    <div class="card mb-4">
+        <div class="card-header bg-white">
+            <h4 class="mb-0">
+                <i class="fa-solid fa-video me-2 text-success"></i>
+                أفكار الفيديوهات ({{ result.videos|length }})
+            </h4>
+        </div>
+        <div class="card-body">
+            <div class="list-group">
+                {% for video in result.videos %}
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-1">فكرة فيديو {{ loop.index }}</h5>
+                            <p class="mb-0">{{ video }}</p>
+                        </div>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary">نسخ</button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if result.articles and result.articles|length > 0 %}
+    <div class="card mb-4">
+        <div class="card-header bg-white">
+            <h4 class="mb-0">
+                <i class="fa-solid fa-file-lines me-2 text-info"></i>
+                المقالات ({{ result.articles|length }})
+            </h4>
+        </div>
+        <div class="card-body">
+            <div class="list-group">
+                {% for article in result.articles %}
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-1">مقال {{ loop.index }}</h5>
+                            <p class="mb-0">{{ article }}</p>
+                        </div>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary">نسخ</button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="d-grid mt-4">
+        <button class="btn btn-primary btn-lg">
+            <i class="fa-solid fa-download me-2"></i>
+            تحميل جميع النتائج (PDF)
+        </button>
+    </div>
+</div>
+{% endblock %}

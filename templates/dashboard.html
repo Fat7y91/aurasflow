@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}لوحة التحكم - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-3">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <img src="https://via.placeholder.com/150" alt="صورة المستخدم" class="rounded-circle mb-3" style="width: 150px;">
+                <h5 class="card-title">{{ user.username }}</h5>
+                <p class="text-muted mb-1">{{ user.email }}</p>
+                <p class="text-muted">عضو منذ: {{ user.created_at.strftime('%Y-%m-%d') }}</p>
+                <p class="text-muted">آخر دخول: {{ user.last_login.strftime('%Y-%m-%d %H:%M') if user.last_login else 'لم يتم تسجيل الدخول بعد' }}</p>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">رصيد النقاط</h5>
+                <div class="d-flex align-items-center">
+                    <i class="fa-solid fa-coins fa-2x text-warning me-3"></i>
+                    <div>
+                        <h2 class="mb-0">{{ user.credits }}</h2>
+                        <p class="text-muted mb-0">نقطة متاحة</p>
+                    </div>
+                </div>
+                <a href="#" class="btn btn-primary w-100 mt-3">
+                    <i class="fa-solid fa-cart-shopping me-2"></i>
+                    شراء نقاط
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-9">
+        <div class="card mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fa-solid fa-gauge me-2"></i> نظرة عامة</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="card border-primary">
+                            <div class="card-body text-center">
+                                <i class="fa-solid fa-project-diagram fa-2x text-primary mb-3"></i>
+                                <h5 class="card-title">المشاريع</h5>
+                                <p class="display-4">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card border-success">
+                            <div class="card-body text-center">
+                                <i class="fa-solid fa-paintbrush fa-2x text-success mb-3"></i>
+                                <h5 class="card-title">التصاميم</h5>
+                                <p class="display-4">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card border-info">
+                            <div class="card-body text-center">
+                                <i class="fa-solid fa-video fa-2x text-info mb-3"></i>
+                                <h5 class="card-title">الفيديوهات</h5>
+                                <p class="display-4">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h5 class="mt-4">الأنشطة الحديثة</h5>
+                <div class="list-group">
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">توليد أفكار تسويقية</h6>
+                            <small>منذ 5 دقائق</small>
+                        </div>
+                        <p class="mb-1">تم توليد 3 أفكار جديدة لمشروع "مطعم الوجبات السريعة"</p>
+                        <small class="text-muted">تم خصم 5 نقاط</small>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">تسجيل دخول</h6>
+                            <small>منذ 10 دقائق</small>
+                        </div>
+                        <p class="mb-1">تم تسجيل الدخول بنجاح</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fa-solid fa-rocket me-2"></i> ابدأ مشروعك الجديد</h5>
+            </div>
+            <div class="card-body">
+                <p>أنشئ مشروعك الأول لبدء رحلة التسويق الذكية:</p>
+                <a href="#" class="btn btn-primary">
+                    <i class="fa-solid fa-plus me-2"></i>
+                    إنشاء مشروع جديد
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

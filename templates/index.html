@@ -1,139 +1,92 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <title>AiDesignFlow | صانع الأفكار الإبداعية</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
+{% extends 'base.html' %}
 
-<body>
-  <div class="container">
-    <h1 class="title">🎨 AiDesignFlow</h1>
-
-    <form id="designForm">
-      <textarea name="prompt" placeholder="اكتب فكرة التصميم هنا..." required></textarea>
-
-      <div class="options-row">
-        <label>درجة الإبداع:</label>
-        <select name="creativity">
-          <option value="منخفض">منخفض</option>
-          <option value="متوسط" selected>متوسط</option>
-          <option value="مرتفع">مرتفع</option>
-        </select>
-      </div>
-
-      <div class="options-row">
-        <label>نمط التفكير:</label>
-        <select name="mode">
-          <option value="focused" selected>مركّز</option>
-          <option value="creative">إبداعي</option>
-        </select>
-      </div>
-
-      <div class="options-row">
-        <label>النموذج:</label>
-        <select name="model">
-          <option value="DeepSeek" selected>DeepSeek</option>
-          <option value="ChatGPT">ChatGPT</option>
-        </select>
-      </div>
-
-      <div class="options-row">
-        <label>لغة الواجهة:</label>
-        <select name="ui_language">
-          <option value="ar" selected>العربية</option>
-          <option value="en">English</option>
-        </select>
-      </div>
-
-      <button type="submit">🚀 إنشاء التصميم</button>
-    </form>
-
-    <div id="loading" class="loader" style="display:none;">
-      <p id="loading-text">0%</p>
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-lg">
+            <div class="card-header bg-white">
+                <h3 class="text-center text-primary">
+                    <i class="fa-solid fa-wand-magic-sparkles me-2"></i>
+                    توليد أفكار تسويقية إبداعية
+                </h3>
+            </div>
+            <div class="card-body">
+                {% if not current_user.is_authenticated %}
+                <div class="alert alert-info">
+                    <i class="fa-solid fa-info-circle me-2"></i>
+                    لتتمكن من استخدام المنصة، يرجى <a href="{{ url_for('login') }}">تسجيل الدخول</a> أو <a href="{{ url_for('register') }}">إنشاء حساب جديد</a>
+                </div>
+                {% endif %}
+                
+                <div class="mb-3">
+                    <label for="prompt" class="form-label">وصف المحتوى المطلوب:</label>
+                    <textarea class="form-control" id="prompt" rows="4" placeholder="أدخل وصفًا تفصيليًا لما تريد إنشاءه..." {% if not current_user.is_authenticated %}disabled{% endif %}></textarea>
+                    <div class="form-text">كن دقيقًا في وصفك للحصول على نتائج أفضل</div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">مستوى الإبداع:</label>
+                        <div class="btn-group w-100" role="group">
+                            <button type="button" class="btn btn-outline-primary creativity-btn active" data-value="low" {% if not current_user.is_authenticated %}disabled{% endif %}>منخفض</button>
+                            <button type="button" class="btn btn-outline-primary creativity-btn" data-value="medium" {% if not current_user.is_authenticated %}disabled{% endif %}>متوسط</button>
+                            <button type="button" class="btn btn-outline-primary creativity-btn" data-value="high" {% if not current_user.is_authenticated %}disabled{% endif %}>مرتفع</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">اللغة:</label>
+                        <div class="btn-group w-100" role="group">
+                            <button type="button" class="btn btn-outline-primary language-btn active" data-value="auto" {% if not current_user.is_authenticated %}disabled{% endif %}>تلقائي</button>
+                            <button type="button" class="btn btn-outline-primary language-btn" data-value="arabic" {% if not current_user.is_authenticated %}disabled{% endif %}>عربي</button>
+                            <button type="button" class="btn btn-outline-primary language-btn" data-value="english" {% if not current_user.is_authenticated %}disabled{% endif %}>إنجليزي</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid mb-4">
+                    <button id="generate-btn" class="btn btn-primary btn-lg" {% if not current_user.is_authenticated %}disabled{% endif %}>
+                        <i class="fa-solid fa-gears me-2"></i>
+                        توليد الأفكار
+                    </button>
+                </div>
+                
+                {% if current_user.is_authenticated %}
+                <div class="alert alert-warning">
+                    <i class="fa-solid fa-coins me-2"></i>
+                    <span id="credits-count">{{ current_user.credits }}</span> نقطة متبقية
+                </div>
+                {% endif %}
+                
+                <div id="loader-section" class="text-center d-none">
+                    <div class="mb-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">جاري التحميل...</span>
+                        </div>
+                    </div>
+                    <div class="progress mb-3" style="height: 25px;">
+                        <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" 
+                            role="progressbar" style="width: 0%">0%</div>
+                    </div>
+                    <div id="progress-message" class="text-muted">جاري تحليل المدخلات...</div>
+                </div>
+                
+                <div id="results-section" class="d-none">
+                    <h4 class="border-bottom pb-2">الأفكار المقترحة:</h4>
+                    <div id="ideas-container" class="mt-3"></div>
+                    <div class="mt-4">
+                        <button id="copy-btn" class="btn btn-outline-success">
+                            <i class="fa-regular fa-copy me-2"></i>
+                            نسخ النتائج
+                        </button>
+                        <div id="copy-notification" class="alert alert-success mt-2 d-none">تم النسخ بنجاح!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
+{% endblock %}
 
-    <div id="resultBox" style="display:none;">
-      <h3>📋 النتيجة:</h3>
-      <pre id="resultText"></pre>
-      <button id="copyBtn">📋 نسخ</button>
-    </div>
-
-    <div id="toast" class="toast">✅ تم النسخ!</div>
-  </div>
-
-  <script>
-    const progressPhrases = [
-      "🧠 جاري تحليل الفكرة...",
-      "💡 ابتكار أفكار تصميم جديدة...",
-      "🎨 تجهيز التصميم الإبداعي...",
-      "📋 تنسيق النتائج النهائية..."
-    ];
-
-    function showToast(message) {
-      const toast = document.getElementById("toast");
-      toast.textContent = message;
-      toast.className = "toast show";
-      setTimeout(() => {
-        toast.className = "toast";
-      }, 2500);
-    }
-
-    $("#designForm").submit(function (e) {
-      e.preventDefault();
-      $("#resultBox").hide();
-      $("#loading").show();
-      $("#loading-text").text("0%");
-      let progress = 0;
-      let phraseIndex = 0;
-
-      const loadingInterval = setInterval(() => {
-        if (progress < 100) {
-          progress += 2;
-          $("#loading-text").text(progress + "% " + progressPhrases[phraseIndex]);
-          phraseIndex = (phraseIndex + 1) % progressPhrases.length;
-        }
-      }, 200);
-
-      const formData = {
-        prompt: $("textarea[name='prompt']").val(),
-        creativity: $("select[name='creativity']").val(),
-        mode: $("select[name='mode']").val(),
-        model: $("select[name='model']").val(),
-        ui_language: $("select[name='ui_language']").val()
-      };
-
-      $.ajax({
-        url: "/generate",
-        type: "POST",
-        contentType: "application/json",
-        data: JSON.stringify(formData),
-        success: function (data) {
-          clearInterval(loadingInterval);
-          $("#loading").hide();
-          if (data.result) {
-            $("#resultText").text(data.result);
-            $("#resultBox").show();
-          } else {
-            $("#resultText").text("⚠️ لم يتم استلام نتيجة.");
-            $("#resultBox").show();
-          }
-        },
-        error: function () {
-          clearInterval(loadingInterval);
-          $("#loading").hide();
-          $("#resultText").text("⚠️ حدث خطأ أثناء الاتصال بالخادم.");
-          $("#resultBox").show();
-        }
-      });
-    });
-
-    $("#copyBtn").click(function () {
-      navigator.clipboard.writeText($("#resultText").text()).then(() => {
-        showToast("✅ تم نسخ النتيجة!");
-      });
-    });
-  </script>
-</body>
-</html>
+{% block scripts %}
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+{% endblock %}
