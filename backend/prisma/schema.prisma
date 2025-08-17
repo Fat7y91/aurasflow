@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  name      String?
+  password  String
+  role      Role      @default(USER)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  projects  Project[]
+}
+
+model Project {
+  id         String    @id @default(uuid())
+  ownerId    String
+  name       String
+  brandJson  Json?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  owner      User      @relation(fields: [ownerId], references: [id])
+  contents   Content[]
+}
+
+model Content {
+  id         String       @id @default(uuid())
+  projectId  String
+  type       ContentType
+  title      String
+  status     Status       @default(DRAFT)
+  scheduleAt DateTime?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  project    Project      @relation(fields: [projectId], references: [id])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ContentType {
+  IMAGE
+  VIDEO
+  ARTICLE
+}
+
+enum Status {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+}
