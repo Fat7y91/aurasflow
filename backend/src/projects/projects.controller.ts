@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
@@ -11,8 +11,18 @@ export class ProjectsController {
   constructor(private readonly projects: ProjectsService) {}
 
   @Get()
-  findMine(@Req() req: any) {
-    return this.projects.findAllByOwner(req.user.id);
+  findMine(
+    @Req() req: any,
+    @Query('page') pageParam?: string,
+    @Query('limit') limitParam?: string,
+  ) {
+    // Parse and validate page parameter
+    const page = pageParam ? Math.max(1, parseInt(pageParam, 10)) || 1 : 1;
+    
+    // Parse and validate limit parameter with cap at 50
+    const limit = limitParam ? Math.min(50, Math.max(1, parseInt(limitParam, 10))) || 10 : 10;
+    
+    return this.projects.findAllByOwnerPaginated(req.user.id, page, limit);
   }
 
   @Post()

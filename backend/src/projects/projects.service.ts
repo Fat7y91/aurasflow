@@ -15,6 +15,35 @@ export class ProjectsService {
     });
   }
 
+  async findAllByOwnerPaginated(ownerId: string, page = 1, limit = 10) {
+    // Calculate skip value for pagination
+    const skip = (page - 1) * limit;
+    
+    // Get total count for pagination info
+    const total = await this.prisma.project.count({
+      where: { ownerId },
+    });
+    
+    // Get paginated items
+    const items = await this.prisma.project.findMany({
+      where: { ownerId },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: limit,
+    });
+    
+    // Calculate total pages
+    const pageCount = Math.ceil(total / limit);
+    
+    return {
+      items,
+      page,
+      limit,
+      total,
+      pageCount,
+    };
+  }
+
   async findOneForOwner(id: string, ownerId: string) {
     const p = await this.prisma.project.findUnique({ where: { id } });
     if (!p) throw new NotFoundException('Not found');

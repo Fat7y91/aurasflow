@@ -1,26 +1,24 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { apiGet, apiPatch, apiDelete } from '../../../src/lib/api';
 
 interface Project {
   id: string;
   name: string;
+  ownerId: string;
   brandJson?: {
     primaryColor?: string;
-    [key: string]: any;
   } | null;
   createdAt: string;
   updatedAt: string;
 }
 
-interface Props {
-  params: { id: string };
-}
-
-export default function ProjectDetailPage({ params }: Props) {
+export default function ProjectDetailPage() {
   const router = useRouter();
+  const params = useParams<{ id: string }>();
+  const id = (params?.id || "") as string;
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -34,13 +32,14 @@ export default function ProjectDetailPage({ params }: Props) {
 
   useEffect(() => {
     loadProject();
-  }, [params.id]);
+  }, [id]);
 
   const loadProject = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await apiGet<Project>(`/api/projects/${params.id}`);
+      
+      const data = await apiGet<Project>(`/api/projects/${id}`);
       setProject(data);
       setName(data.name);
       setPrimaryColor(data.brandJson?.primaryColor || '');
@@ -62,12 +61,11 @@ export default function ProjectDetailPage({ params }: Props) {
       const updateData = {
         name,
         brandJson: {
-          ...project?.brandJson,
-          primaryColor: primaryColor || undefined,
+          primaryColor,
         },
       };
       
-      const updatedProject = await apiPatch<Project>(`/api/projects/${params.id}`, updateData);
+      const updatedProject = await apiPatch<Project>(`/api/projects/${id}`, updateData);
       setProject(updatedProject);
       setSuccessMessage('Project updated successfully!');
       
@@ -89,7 +87,7 @@ export default function ProjectDetailPage({ params }: Props) {
       setDeleting(true);
       setError(null);
       
-      await apiDelete(`/api/projects/${params.id}`);
+      await apiDelete(`/api/projects/${id}`);
       router.push('/projects');
     } catch (err: any) {
       setError(err.message || 'Failed to delete project');
@@ -118,7 +116,7 @@ export default function ProjectDetailPage({ params }: Props) {
           {error || 'Project not found'}
         </div>
         <button 
-          onClick={() => router.push('/projects')}
+          onClick={() => router.back()}
           style={{
             padding: '10px 20px',
             backgroundColor: '#6c757d',
@@ -128,7 +126,7 @@ export default function ProjectDetailPage({ params }: Props) {
             cursor: 'pointer'
           }}
         >
-          Back to Projects
+          Back
         </button>
       </div>
     );
@@ -136,28 +134,7 @@ export default function ProjectDetailPage({ params }: Props) {
 
   return (
     <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-      <div style={{ marginBottom: '20px' }}>
-        <button 
-          onClick={() => router.push('/projects')}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: '#6c757d',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            marginBottom: '20px'
-          }}
-        >
-          ← Back to Projects
-        </button>
-        
-        <h1 style={{ margin: '0 0 10px 0', fontSize: '24px' }}>Edit Project</h1>
-        <p style={{ margin: '0', color: '#666', fontSize: '14px' }}>
-          Project ID: {project?.id}
-        </p>
-      </div>
-
+      {/* Error Message */}
       {error && (
         <div style={{
           padding: '12px',
@@ -171,6 +148,7 @@ export default function ProjectDetailPage({ params }: Props) {
         </div>
       )}
 
+      {/* Success Message */}
       {successMessage && (
         <div style={{
           padding: '12px',
@@ -184,13 +162,15 @@ export default function ProjectDetailPage({ params }: Props) {
         </div>
       )}
 
+      <h1 style={{ marginBottom: '20px' }}>Edit Project</h1>
+
       <form onSubmit={handleSave}>
+        {/* Name Input */}
         <div style={{ marginBottom: '20px' }}>
           <label style={{ 
             display: 'block', 
             marginBottom: '8px', 
-            fontWeight: 'bold',
-            fontSize: '14px' 
+            fontWeight: 'bold' 
           }}>
             Project Name
           </label>
@@ -211,12 +191,12 @@ export default function ProjectDetailPage({ params }: Props) {
           />
         </div>
 
+        {/* Primary Color Input */}
         <div style={{ marginBottom: '30px' }}>
           <label style={{ 
             display: 'block', 
             marginBottom: '8px', 
-            fontWeight: 'bold',
-            fontSize: '14px' 
+            fontWeight: 'bold' 
           }}>
             Primary Color
           </label>
@@ -249,82 +229,65 @@ export default function ProjectDetailPage({ params }: Props) {
           </div>
         </div>
 
+        {/* Action Buttons */}
         <div style={{ 
           display: 'flex', 
           gap: '10px', 
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
-          <button
-            type="submit"
-            disabled={saving}
-            style={{
-              padding: '12px 24px',
-              backgroundColor: saving ? '#6c757d' : '#007bff',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: saving ? 'not-allowed' : 'pointer',
-              fontSize: '16px',
-              fontWeight: 'bold'
-            }}
-          >
-            {saving ? 'Saving...' : 'Save Changes'}
-          </button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button
+              type="submit"
+              disabled={saving}
+              style={{
+                padding: '12px 24px',
+                backgroundColor: saving ? '#6c757d' : '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: saving ? 'not-allowed' : 'pointer',
+                fontSize: '16px'
+              }}
+            >
+              {saving ? 'Saving...' : 'Save'}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={deleting}
+              style={{
+                padding: '12px 24px',
+                backgroundColor: deleting ? '#6c757d' : '#dc3545',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: deleting ? 'not-allowed' : 'pointer',
+                fontSize: '16px'
+              }}
+            >
+              {deleting ? 'Deleting...' : 'Delete'}
+            </button>
+          </div>
 
           <button
             type="button"
-            onClick={handleDelete}
-            disabled={deleting}
+            onClick={() => router.back()}
             style={{
               padding: '12px 24px',
-              backgroundColor: deleting ? '#6c757d' : '#dc3545',
+              backgroundColor: '#6c757d',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
-              cursor: deleting ? 'not-allowed' : 'pointer',
+              cursor: 'pointer',
               fontSize: '16px'
             }}
           >
-            {deleting ? 'Deleting...' : 'Delete Project'}
+            Back
           </button>
         </div>
       </form>
-
-      {project && (
-        <div style={{ 
-          marginTop: '40px', 
-          padding: '16px', 
-          backgroundColor: '#f8f9fa', 
-          borderRadius: '4px',
-          fontSize: '14px' 
-        }}>
-          <h3 style={{ margin: '0 0 10px 0', fontSize: '16px' }}>Project Info</h3>
-          <p style={{ margin: '5px 0' }}>
-            <strong>Created:</strong> {new Date(project.createdAt).toLocaleString()}
-          </p>
-          <p style={{ margin: '5px 0' }}>
-            <strong>Updated:</strong> {new Date(project.updatedAt).toLocaleString()}
-          </p>
-          {project.brandJson && Object.keys(project.brandJson).length > 1 && (
-            <details style={{ marginTop: '10px' }}>
-              <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>
-                Brand JSON Data
-              </summary>
-              <pre style={{ 
-                marginTop: '10px', 
-                padding: '10px', 
-                backgroundColor: 'white', 
-                borderRadius: '4px',
-                overflow: 'auto',
-                fontSize: '12px'
-              }}>
-                {JSON.stringify(project.brandJson, null, 2)}
-              </pre>
-            </details>
-          )}
-        </div>
-      )}
     </div>
   );
 }
