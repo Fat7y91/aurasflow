@@ -1,34 +1,15 @@
-// Base API URL from environment
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-
-// Get auth headers with token from localStorage
-function getAuthHeaders(): Record<string, string> {
-  if (typeof window === 'undefined') return {};
-  
-  const token = localStorage.getItem('access_token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
-
-// Handle 401 responses by clearing token and redirecting to login
-function handle401() {
-  if (typeof window === 'undefined') return;
-  
-  localStorage.removeItem('access_token');
-  const currentPath = window.location.pathname;
-  window.location.href = `/login?from=${encodeURIComponent(currentPath)}`;
-}
-
-// Core fetch wrapper
+// Core fetch wrapper for Next.js API routes
 async function apiFetch<T>(
   path: string,
   method: string,
   body?: unknown
 ): Promise<T> {
-  const url = path.startsWith('/') ? `${BASE_URL}${path}` : path;
+  // Ensure we're calling Next.js API routes
+  const url = path.startsWith('/api/') ? path : `/api${path.startsWith('/') ? path : '/' + path}`;
   
-  const headers: Record<string, string> = {
-    ...getAuthHeaders(),
-  };
+  console.log(`API ${method} request to:`, url);
+  
+  const headers: Record<string, string> = {};
   
   // Add Content-Type for methods that send body
   if (body !== undefined) {
@@ -39,27 +20,26 @@ async function apiFetch<T>(
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
+    // Ensure credentials (cookies) are sent with requests
+    credentials: 'include',
+    // Don't cache responses
+    cache: 'no-store',
   });
   
-  // Handle 401 responses
-  if (response.status === 401) {
-    handle401();
-    throw new Error('Unauthorized - redirecting to login');
-  }
+  console.log(`API ${method} response:`, response.status, response.statusText);
   
-  // Handle other non-ok responses
+  // Handle non-ok responses
   if (!response.ok) {
+    console.error(`API Error - URL: ${url}, Status: ${response.status}`);
     const data = await response.json().catch(() => ({}));
     const message = data.message || `HTTP ${response.status}: ${response.statusText}`;
     throw new Error(message);
   }
-  
+
   // Handle empty responses (common for DELETE)
   const text = await response.text();
   return text ? JSON.parse(text) : (null as T);
-}
-
-// GET request
+}// GET request
 export async function apiGet<T>(path: string): Promise<T> {
   return apiFetch<T>(path, 'GET');
 }
