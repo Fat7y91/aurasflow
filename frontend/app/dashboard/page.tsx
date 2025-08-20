@@ -151,10 +151,10 @@ export default function DashboardPage() {
         // Load recent projects (don't fail if this fails)
         try {
           console.log('Dashboard - Loading projects');
-          const projectsData = await apiGet<any>('/projects?page=1&limit=5');
+          const projectsData = await apiGet<any>('/projects?limit=5&sort=-updatedAt');
           const projectsList = Array.isArray(projectsData) 
             ? projectsData 
-            : (projectsData.projects || projectsData.data || []);
+            : (projectsData.projects || projectsData.data || projectsData.items || []);
           console.log('Dashboard - Projects loaded:', projectsList);
           setRecentProjects(projectsList.slice(0, 5));
         } catch (projectsError) {
@@ -266,7 +266,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-hero" dir={language === 'ar' ? 'rtl' : 'ltr'}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -345,7 +345,26 @@ export default function DashboardPage() {
                 </Link>
               </div>
 
-              {recentProjects.length > 0 ? (
+              {loading ? (
+                // Loading skeleton for projects
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[...Array(4)].map((_, index) => (
+                    <div key={index} className="bg-white/5 rounded-glass p-4 border border-border-glass animate-pulse">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 bg-white/10 rounded-glass"></div>
+                        <div className="flex-1">
+                          <div className="h-4 bg-white/10 rounded w-3/4 mb-2"></div>
+                          <div className="h-3 bg-white/10 rounded w-1/2"></div>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div className="h-3 bg-white/10 rounded w-1/3"></div>
+                        <div className="h-3 bg-white/10 rounded w-12"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : recentProjects.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {recentProjects.map((project) => (
                     <motion.div

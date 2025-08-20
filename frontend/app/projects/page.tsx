@@ -48,6 +48,9 @@ export default function ProjectsPage() {
 
   // Search and filter state
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Kebab menu state
+  const [openKebabMenu, setOpenKebabMenu] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<'All' | 'Active' | 'Archived'>('All');
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'nameAsc' | 'nameDesc' | 'updated'>('newest');
   const [debouncedQuery, setDebouncedQuery] = useState('');
@@ -165,6 +168,18 @@ export default function ProjectsPage() {
   useEffect(() => {
     loadPage(1);
   }, [sortBy]);
+
+  // Close kebab menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (openKebabMenu) {
+        setOpenKebabMenu(null);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [openKebabMenu]);
 
   // Filter and search projects
   const filteredProjects = useMemo(() => {
@@ -378,14 +393,13 @@ export default function ProjectsPage() {
 
   // Format date helper
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(
-      language === 'ar' ? 'ar-EG' : 'en-US',
-      {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      }
-    );
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    };
+    return date.toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-US', options);
   };
 
   // Loading skeleton component
@@ -407,8 +421,8 @@ export default function ProjectsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-hero pt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gradient-hero pt-24" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -601,16 +615,6 @@ export default function ProjectsPage() {
                         </h3>
                       </div>
                     </div>
-                    
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                      <div className="relative">
-                        <button className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors duration-200">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
                   </div>
 
                   {/* Project Info */}
@@ -633,12 +637,74 @@ export default function ProjectsPage() {
                   <div className="pt-4 border-t border-white/10 flex justify-between items-center">
                     <Link
                       href={`/projects/${project.id}`}
-                      className="bg-gradient-button text-white font-semibold px-4 py-2 rounded-glass hover:shadow-button hover:transform hover:-translate-y-0.5 transition-all duration-200 text-sm"
+                      className="bg-gradient-button text-white font-semibold px-4 py-2 rounded-glass hover:shadow-button hover:transform hover:-translate-y-0.5 transition-all duration-200 text-sm hidden sm:inline-flex"
                     >
                       {t.viewProject}
                     </Link>
                     
-                    <div className="flex items-center gap-2">
+                    {/* Mobile: Show only kebab menu */}
+                    <div className="sm:hidden">
+                      <div className="relative">
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenKebabMenu(openKebabMenu === project.id ? null : project.id);
+                          }}
+                          className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors duration-200"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                          </svg>
+                        </button>
+                        
+                        {/* Mobile Kebab Dropdown Menu */}
+                        {openKebabMenu === project.id && (
+                          <div className="absolute top-full right-0 mt-2 w-48 bg-white/95 backdrop-blur-sm rounded-lg shadow-xl border border-white/20 py-2 z-50">
+                            <button
+                              onClick={() => {
+                                router.push(`/projects/${project.id}`);
+                                setOpenKebabMenu(null);
+                              }}
+                              className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors duration-200 flex items-center gap-2"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
+                              {language === 'ar' ? 'عرض المشروع' : 'View Project'}
+                            </button>
+                            <button
+                              onClick={() => {
+                                router.push(`/projects/${project.id}/edit`);
+                                setOpenKebabMenu(null);
+                              }}
+                              className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors duration-200 flex items-center gap-2"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                              </svg>
+                              {language === 'ar' ? 'تعديل' : 'Edit'}
+                            </button>
+                            <button
+                              onClick={() => {
+                                setProjectToDelete(project);
+                                setShowDeleteModal(true);
+                                setOpenKebabMenu(null);
+                              }}
+                              className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200 flex items-center gap-2"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                              {language === 'ar' ? 'حذف' : 'Delete'}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Desktop: Show action buttons */}
+                    <div className="hidden sm:flex items-center gap-2">
                       <Link
                         href={`/projects/${project.id}/edit`}
                         className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors duration-200"
