@@ -223,9 +223,90 @@ export default function DashboardPage() {
             {t('dashboard.welcome')}, {user?.name || user?.email || '—'}!
           </h1>
           <p className="text-white/80 text-lg">{t('dashboard.dashboard')}</p>
+          
+          {/* New Features Banner */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="mt-6 bg-gradient-to-r from-[#7B5CE6]/20 to-[#F28AC0]/20 backdrop-blur-glass rounded-xl p-4 border border-[#7B5CE6]/30"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-white font-semibold text-lg mb-1">
+                  🎉 {locale === 'ar' ? 'لوحة تحكم المشاريع الجديدة متاحة الآن!' : 'New Project Dashboard Available!'}
+                </h3>
+                <p className="text-white/70 text-sm">
+                  {locale === 'ar' 
+                    ? 'إدارة متقدمة للمشاريع مع تحليلات KPI ولوحة النشاط وإدارة المنشورات'
+                    : 'Advanced project management with KPI analytics, activity logs, and post management'
+                  }
+                </p>
+              </div>
+              <Link
+                href="/dashboard/projects/demo"
+                className="bg-gradient-to-r from-[#7B5CE6] to-[#F28AC0] text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity font-medium whitespace-nowrap"
+              >
+                {locale === 'ar' ? 'جرب الآن' : 'Try Now'}
+              </Link>
+            </div>
+          </motion.div>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Quick Actions Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.05 }}
+            className="lg:col-span-3 mb-4"
+          >
+            <div className="bg-white/10 backdrop-blur-glass rounded-card p-6 border border-border-glass">
+              <h2 className="text-white text-xl font-semibold mb-4">{locale === 'ar' ? 'إجراءات سريعة' : 'Quick Actions'}</h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Link
+                  href="/dashboard/projects/demo"
+                  className="bg-gradient-to-r from-[#7B5CE6] to-[#F28AC0] p-4 rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 group"
+                >
+                  <div className="text-white text-2xl mb-2">📊</div>
+                  <h3 className="text-white font-semibold mb-1">
+                    {locale === 'ar' ? 'لوحة المشروع المتطورة' : 'Advanced Project Dashboard'}
+                  </h3>
+                  <p className="text-white/80 text-sm">
+                    {locale === 'ar' ? 'KPI، إدارة المنشورات، تتبع النشاط' : 'KPIs, Post Management, Activity Tracking'}
+                  </p>
+                </Link>
+                
+                <Link
+                  href="/pricing"
+                  className="bg-white/5 p-4 rounded-xl hover:bg-white/10 transition-all duration-200 border border-white/10 group"
+                >
+                  <div className="text-white text-2xl mb-2">💎</div>
+                  <h3 className="text-white font-semibold mb-1">
+                    {locale === 'ar' ? 'خطط التسعير' : 'Pricing Plans'}
+                  </h3>
+                  <p className="text-white/70 text-sm">
+                    {locale === 'ar' ? 'اختر الخطة المناسبة لك' : 'Choose your perfect plan'}
+                  </p>
+                </Link>
+                
+                <Link
+                  href="/projects"
+                  className="bg-white/5 p-4 rounded-xl hover:bg-white/10 transition-all duration-200 border border-white/10 group"
+                >
+                  <div className="text-white text-2xl mb-2">🚀</div>
+                  <h3 className="text-white font-semibold mb-1">
+                    {locale === 'ar' ? 'إنشاء مشروع جديد' : 'Create New Project'}
+                  </h3>
+                  <p className="text-white/70 text-sm">
+                    {locale === 'ar' ? 'ابدأ مشروعك التالي' : 'Start your next project'}
+                  </p>
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+
           {/* User Info Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -347,12 +428,20 @@ export default function DashboardPage() {
                         <span className="text-white/60 text-sm">
                           {formatDate(project.createdAt)}
                         </span>
-                        <Link
-                          href={`/projects/${project.id}`}
-                          className="text-accent hover:text-accent/80 transition-colors duration-200 text-sm font-medium"
-                        >
-                          {locale === 'ar' ? 'عرض' : 'View'}
-                        </Link>
+                        <div className="flex gap-2">
+                          <Link
+                            href={`/projects/${project.id}`}
+                            className="text-accent hover:text-accent/80 transition-colors duration-200 text-sm font-medium"
+                          >
+                            {locale === 'ar' ? 'عرض' : 'View'}
+                          </Link>
+                          <Link
+                            href={`/dashboard/projects/${project.id}`}
+                            className="bg-gradient-to-r from-[#7B5CE6] to-[#F28AC0] text-white px-3 py-1 rounded-lg hover:opacity-90 transition-opacity text-sm font-medium"
+                          >
+                            {locale === 'ar' ? 'لوحة التحكم' : 'Dashboard'}
+                          </Link>
+                        </div>
                       </div>
                     </motion.div>
                   ))}
@@ -366,12 +455,20 @@ export default function DashboardPage() {
                   </div>
                   <p className="text-white/80 text-lg font-medium mb-2">{t('dashboard.noProjects')}</p>
                   <p className="text-white/60 mb-4">{t('dashboard.noProjectsDesc')}</p>
-                  <Link
-                    href="/projects"
-                    className="inline-flex items-center bg-gradient-button text-white px-6 py-3 rounded-glass hover:shadow-button hover:transform hover:-translate-y-0.5 transition-all duration-200"
-                  >
-                    {t('dashboard.createProject')}
-                  </Link>
+                  <div className="flex gap-4 justify-center">
+                    <Link
+                      href="/projects"
+                      className="inline-flex items-center bg-gradient-button text-white px-6 py-3 rounded-glass hover:shadow-button hover:transform hover:-translate-y-0.5 transition-all duration-200"
+                    >
+                      {t('dashboard.createProject')}
+                    </Link>
+                    <Link
+                      href="/dashboard/projects/demo"
+                      className="inline-flex items-center bg-gradient-to-r from-[#7B5CE6] to-[#F28AC0] text-white px-6 py-3 rounded-glass hover:shadow-button hover:transform hover:-translate-y-0.5 transition-all duration-200"
+                    >
+                      {locale === 'ar' ? 'مشاهدة لوحة تحكم تجريبية' : 'View Demo Dashboard'}
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>
