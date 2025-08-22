@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { useTranslations } from '../../lib/i18n';
 import { getAccessToken, isAuthenticated } from '../../lib/auth';
 import { apiGet } from '../../src/lib/api';
 
@@ -23,56 +24,8 @@ interface Project {
   updatedAt: string;
 }
 
-// Translations
-const translations = {
-  ar: {
-    dashboard: 'لوحة التحكم',
-    welcome: 'مرحباً',
-    accountInfo: 'معلومات الحساب',
-    email: 'البريد الإلكتروني',
-    currentPlan: 'الخطة الحالية',
-    free: 'مجانية',
-    upgradePlan: 'ترقية الخطة',
-    recentProjects: 'المشاريع الأخيرة',
-    viewAllProjects: 'عرض جميع المشاريع',
-    noProjects: 'لا توجد مشاريع',
-    noProjectsDesc: 'ابدأ بإنشاء مشروعك الأول',
-    createProject: 'إنشاء مشروع جديد',
-    loading: 'جاري التحميل...',
-    error: 'حدث خطأ في تحميل البيانات',
-    features: 'المميزات',
-    planFeatures: {
-      projects: '٥ مشاريع',
-      tools: 'أدوات أساسية',
-      support: 'دعم المجتمع'
-    }
-  },
-  en: {
-    dashboard: 'Dashboard',
-    welcome: 'Welcome',
-    accountInfo: 'Account Information',
-    email: 'Email',
-    currentPlan: 'Current Plan',
-    free: 'Free',
-    upgradePlan: 'Upgrade Plan',
-    recentProjects: 'Recent Projects',
-    viewAllProjects: 'View All Projects',
-    noProjects: 'No Projects',
-    noProjectsDesc: 'Start by creating your first project',
-    createProject: 'Create New Project',
-    loading: 'Loading...',
-    error: 'Error loading data',
-    features: 'Features',
-    planFeatures: {
-      projects: '5 projects',
-      tools: 'Basic tools',
-      support: 'Community support'
-    }
-  }
-};
-
 export default function DashboardPage() {
-  const [language, setLanguage] = useState<'ar' | 'en'>('ar');
+  const { t, locale, dir } = useTranslations();
   const [user, setUser] = useState<User | null>(null);
   const [recentProjects, setRecentProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -80,8 +33,6 @@ export default function DashboardPage() {
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [authChecked, setAuthChecked] = useState(false); // Prevent re-checking
   const router = useRouter();
-
-  const t = translations[language];
 
   // Check auth first
   useEffect(() => {
@@ -113,12 +64,6 @@ export default function DashboardPage() {
     console.log('Dashboard: User is authenticated, proceeding...');
     setIsCheckingAuth(false);
   }, [authChecked, router]); // Add authChecked dependency
-
-  // Load language preference
-  useEffect(() => {
-    const savedLang = localStorage.getItem('language') as 'ar' | 'en' || 'ar';
-    setLanguage(savedLang);
-  }, []);
 
   // Load dashboard data only if authenticated
   useEffect(() => {
@@ -200,7 +145,7 @@ export default function DashboardPage() {
       month: 'short',
       day: 'numeric'
     };
-    return date.toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-US', options);
+    return date.toLocaleDateString(locale === 'ar' ? 'ar-SA' : 'en-US', options);
   };
 
   // Auth checking state
@@ -209,7 +154,7 @@ export default function DashboardPage() {
       <div className="min-h-screen bg-gradient-hero flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-4 border-white border-t-transparent mb-4 mx-auto"></div>
-          <p className="text-white text-xl mb-2">جاري التحقق من المصادقة...</p>
+          <p className="text-white text-xl mb-2">{t('dashboard.loading.checkingAuth')}</p>
         </div>
       </div>
     );
@@ -220,7 +165,7 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen bg-gradient-hero flex items-center justify-center">
         <div className="text-center">
-          <p className="text-white text-xl">جاري إعادة التوجيه...</p>
+          <p className="text-white text-xl">{t('dashboard.loading.redirecting')}</p>
         </div>
       </div>
     );
@@ -232,9 +177,9 @@ export default function DashboardPage() {
       <div className="min-h-screen bg-gradient-hero flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-4 border-white border-t-transparent mb-4 mx-auto"></div>
-          <p className="text-white text-xl mb-2">{t.loading}</p>
-          <p className="text-white/60 text-sm">جاري تحميل بيانات لوحة التحكم...</p>
-          {user && <p className="text-white/60 text-sm mt-2">مرحباً {user.email}</p>}
+          <p className="text-white text-xl mb-2">{t('dashboard.loading.title')}</p>
+          <p className="text-white/60 text-sm">{t('dashboard.loading.subtitle')}</p>
+          {user && <p className="text-white/60 text-sm mt-2">{t('dashboard.loading.welcome').replace('{{email}}', user.email)}</p>}
         </div>
       </div>
     );
@@ -251,13 +196,13 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen bg-gradient-hero flex items-center justify-center">
         <div className="text-center">
-          <p className="text-white text-xl mb-4">{t.error}</p>
+          <p className="text-white text-xl mb-4">{t('dashboard.error')}</p>
           <p className="text-white/70 text-sm mb-4">{error}</p>
           <button
             onClick={retryLoadData}
             className="bg-gradient-button text-white px-6 py-3 rounded-glass hover:shadow-button transition-all duration-200"
           >
-            {language === 'ar' ? 'إعادة المحاولة' : 'Retry'}
+            {locale === 'ar' ? 'إعادة المحاولة' : 'Retry'}
           </button>
         </div>
       </div>
@@ -265,7 +210,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-hero" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen bg-gradient-hero" dir={dir}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8">
         {/* Header */}
         <motion.div
@@ -275,9 +220,9 @@ export default function DashboardPage() {
           className="mb-8"
         >
           <h1 className="text-4xl font-bold text-white mb-2">
-            {t.welcome}, {user?.name || user?.email || '—'}!
+            {t('dashboard.welcome')}, {user?.name || user?.email || '—'}!
           </h1>
-          <p className="text-white/80 text-lg">{t.dashboard}</p>
+          <p className="text-white/80 text-lg">{t('dashboard.dashboard')}</p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -289,37 +234,37 @@ export default function DashboardPage() {
             className="lg:col-span-1"
           >
             <div className="bg-white/10 backdrop-blur-glass rounded-card p-6 border border-border-glass">
-              <h2 className="text-white text-xl font-semibold mb-4">{t.accountInfo}</h2>
+              <h2 className="text-white text-xl font-semibold mb-4">{t('dashboard.accountInfo')}</h2>
               
               <div className="space-y-4">
                 <div>
-                  <label className="text-white/70 text-sm block mb-1">{t.email}</label>
+                  <label className="text-white/70 text-sm block mb-1">{t('dashboard.email')}</label>
                   <p className="text-white font-medium">{user?.email || '—'}</p>
                 </div>
                 
                 <div>
-                  <label className="text-white/70 text-sm block mb-1">{t.currentPlan}</label>
+                  <label className="text-white/70 text-sm block mb-1">{t('dashboard.currentPlan')}</label>
                   <div className="bg-white/5 rounded-glass p-4 border border-border-glass">
                     <h3 className="text-white font-semibold text-lg mb-2">
-                      {t.free}
+                      {t('dashboard.free')}
                     </h3>
-                    <p className="text-white/70 text-sm mb-3">{t.features}:</p>
+                    <p className="text-white/70 text-sm mb-3">{t('dashboard.features')}:</p>
                     <ul className="space-y-1">
                       <li className="text-white/80 text-sm flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-accent rounded-full"></span>
-                        {t.planFeatures.projects}
+                        {t('dashboard.planFeatures.projects')}
                       </li>
                       <li className="text-white/80 text-sm flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-accent rounded-full"></span>
-                        {t.planFeatures.tools}
+                        {t('dashboard.planFeatures.tools')}
                       </li>
                       <li className="text-white/80 text-sm flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-accent rounded-full"></span>
-                        {t.planFeatures.support}
+                        {t('dashboard.planFeatures.support')}
                       </li>
                     </ul>
                     <button className="w-full mt-4 bg-gradient-button text-white py-2 px-4 rounded-glass hover:shadow-button transition-all duration-200">
-                      {t.upgradePlan}
+                      {t('dashboard.upgradePlan')}
                     </button>
                   </div>
                 </div>
@@ -336,12 +281,12 @@ export default function DashboardPage() {
           >
             <div className="bg-white/10 backdrop-blur-glass rounded-card p-6 border border-border-glass">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-white text-xl font-semibold">{t.recentProjects}</h2>
+                <h2 className="text-white text-xl font-semibold">{t('dashboard.recentProjects')}</h2>
                 <Link
                   href="/projects"
                   className="text-accent hover:text-accent/80 transition-colors duration-200 font-medium"
                 >
-                  {t.viewAllProjects}
+                  {t('dashboard.viewAllProjects')}
                 </Link>
               </div>
 
@@ -406,7 +351,7 @@ export default function DashboardPage() {
                           href={`/projects/${project.id}`}
                           className="text-accent hover:text-accent/80 transition-colors duration-200 text-sm font-medium"
                         >
-                          {language === 'ar' ? 'عرض' : 'View'}
+                          {locale === 'ar' ? 'عرض' : 'View'}
                         </Link>
                       </div>
                     </motion.div>
@@ -419,13 +364,13 @@ export default function DashboardPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                     </svg>
                   </div>
-                  <p className="text-white/80 text-lg font-medium mb-2">{t.noProjects}</p>
-                  <p className="text-white/60 mb-4">{t.noProjectsDesc}</p>
+                  <p className="text-white/80 text-lg font-medium mb-2">{t('dashboard.noProjects')}</p>
+                  <p className="text-white/60 mb-4">{t('dashboard.noProjectsDesc')}</p>
                   <Link
                     href="/projects"
                     className="inline-flex items-center bg-gradient-button text-white px-6 py-3 rounded-glass hover:shadow-button hover:transform hover:-translate-y-0.5 transition-all duration-200"
                   >
-                    {t.createProject}
+                    {t('dashboard.createProject')}
                   </Link>
                 </div>
               )}

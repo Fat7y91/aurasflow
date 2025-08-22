@@ -1,0 +1,355 @@
+{
+  "nav": {
+    "logo": "AurasFlow",
+    "home": "Home",
+    "services": "Services", 
+    "pricing": "Pricing",
+    "projects": "Projects",
+    "login": "Login",
+    "register": "Register",
+    "dashboard": "Dashboard",
+    "logout": "Logout",
+    "menu": "Menu",
+    "switchLanguage": "Switch Language"
+  },
+  "home": {
+    "hero": {
+      "title": "Transform Your Workflow with AurasFlow",
+      "subtitle": "A smart platform for project management and collaboration. Bring your team together, plan projects, and track progress in one place—with simple automation and instant reports that boost clarity and speed.",
+      "ctaPrimary": "Start Free",
+      "ctaSecondary": "Learn More",
+      "discover": "Discover more"
+    },
+    "features": {
+      "title": "Why teams choose AurasFlow",
+      "subtitle": "Smart project management that adapts to your workflow",
+      "f1": "Smart Planning",
+      "d1": "Break down complex projects into manageable tasks with AI-powered suggestions.",
+      "f2": "Real-time Tracking", 
+      "d2": "Monitor progress instantly with visual dashboards and automatic updates.",
+      "f3": "Team Collaboration",
+      "d3": "Keep everyone aligned with seamless communication and file sharing."
+    },
+    "counters": {
+      "companies": "Active Companies",
+      "projects": "Completed Projects", 
+      "satisfaction": "Customer Satisfaction",
+      "support": "Email Support"
+    },
+    "pricing": {
+      "title": "Plans that fit your team",
+      "subtitleUSD": "Currency: USD. Start in minutes.",
+      "starter": {
+        "name": "Starter", 
+        "priceUSD": "9", 
+        "b1": "Up to 5 projects", 
+        "b2": "10 members", 
+        "b3": "Basic reports", 
+        "b4": "Email support"
+      },
+      "pro": {
+        "name": "Professional", 
+        "badge": "Most popular", 
+        "priceUSD": "19",
+        "b1": "Unlimited projects", 
+        "b2": "50 members", 
+        "b3": "Advanced reports", 
+        "b4": "Light automation"
+      },
+      "business": {
+        "name": "Business", 
+        "priceUSD": "39",
+        "b1": "Unlimited projects", 
+        "b2": "100 members", 
+        "b3": "Integrations", 
+        "b4": "Priority support"
+      }
+    },
+    "cta": {
+      "title": "Ready to transform your workflow?",
+      "subtitle": "Join thousands of teams already using AurasFlow to deliver projects faster.",
+      "button": "Start Free Today"
+    },
+    "footer": {
+      "description": "Smart project management for modern teams.",
+      "product": "Product",
+      "features": "Features",
+      "pricing": "Pricing", 
+      "projects": "Projects",
+      "company": "Company",
+      "about": "About",
+      "contact": "Contact",
+      "support": "Support",
+      "legal": "Legal",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "copyright": "© 2025 AurasFlow. All rights reserved."
+    }
+  },
+  "dashboard": {
+    "loading": {
+      "title": "Loading...",
+      "subtitle": "Fetching your data and dashboard…",
+      "welcome": "Welcome, {{email}}",
+      "checkingAuth": "Checking authentication...",
+      "redirecting": "Redirecting..."
+    },
+    "welcome": "Welcome",
+    "dashboard": "Manage your projects and track progress",
+    "accountInfo": "Account Information",
+    "email": "Email",
+    "currentPlan": "Current Plan",
+    "free": "Free Plan",
+    "features": "Features",
+    "planFeatures": {
+      "projects": "Up to 3 projects",
+      "tools": "Basic tools",
+      "support": "Community support"
+    },
+    "upgradePlan": "Upgrade Plan",
+    "recentProjects": "Recent Projects",
+    "viewAllProjects": "View All",
+    "noProjects": "No projects yet",
+    "noProjectsDesc": "Create your first project to get started",
+    "createProject": "Create Project",
+    "error": "Error loading dashboard"
+  },
+  "services": {
+    "hero": {
+      "title": "Services that turn marketing into a system",
+      "subtitle": "From strategy to automated publishing—AurasFlow gives you a repeatable engine for growth.",
+      "cta_primary": "Contact Sales",
+      "cta_secondary": "See Packages"
+    },
+    "categories": {
+      "title": "What we do",
+      "items": [
+        { "title": "Strategy & Planning", "bullets": ["Positioning & audience clarity", "Channel plan & monthly calendar", "KPIs that map to revenue"] },
+        { "title": "Content Automation", "bullets": ["Auto-generate posts, videos, and articles", "Editable AI drafts with brand voice", "Approval flows"] },
+        { "title": "Social Publishing", "bullets": ["Auto-schedule across Instagram & TikTok", "Best-time posting windows", "Asset versioning"] },
+        { "title": "SEO & Blog Engine", "bullets": ["Topic clusters & briefs", "On-page optimization", "Monthly performance reports"] },
+        { "title": "Video Shorts", "bullets": ["Script → cut → captions", "Auto-ratios for Reels/TikTok", "B-roll suggestions"] },
+        { "title": "Analytics & KPIs", "bullets": ["Unified dashboard", "Marketing Health Score", "Weekly insights"] },
+        { "title": "Integrations & Automation", "bullets": ["Instagram/TikTok/Facebook", "Web hooks & Zapier", "CMS connectors"] },
+        { "title": "Training & Onboarding", "bullets": ["Team enablement", "Playbooks & templates", "1:1 coaching"] }
+      ]
+    },
+    "process": {
+      "title": "How we work",
+      "steps": [
+        { "title": "Discovery", "desc": "We map goals, audience, and brand voice to build the right growth model." },
+        { "title": "Plan", "desc": "We design your monthly content system with KPIs and review cycles." },
+        { "title": "Execute", "desc": "We generate, schedule, and publish—your team approves." },
+        { "title": "Optimize", "desc": "We learn from data and double down on what moves the needle." }
+      ]
+    },
+    "packages": {
+      "title": "Service packages",
+      "period": "/ month",
+      "items": [
+        {
+          "name": "Starter",
+          "desc": "For individuals and small brands starting systematic marketing.",
+          "price": 29,
+          "features": ["10 social posts", "2 short videos", "1 SEO article", "Email support"]
+        },
+        {
+          "name": "Professional",
+          "desc": "For teams that need velocity and clear reporting.",
+          "price": 79,
+          "features": ["30 social posts", "8 short videos", "4 SEO articles", "Priority support"]
+        },
+        {
+          "name": "Business",
+          "desc": "For multi-brand or multi-market organizations.",
+          "price": 149,
+          "features": ["Unlimited projects", "60 social posts", "16 short videos", "Dedicated success manager"]
+        }
+      ],
+      "cta": "Talk to Us"
+    },
+    "cases": {
+      "title": "Case studies",
+      "items": [
+        { "title": "Beauty retail (GCC)", "result": "+42% CTR in 60 days", "desc": "Calendar discipline + short-form video engine." },
+        { "title": "Health brand (KSA)", "result": "3× blog traffic in 90 days", "desc": "Topic clusters and weekly optimizations." }
+      ]
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "items": [
+        { "q": "Do you replace our agency?", "a": "We can work alongside your agency or in-house team. AurasFlow is the system they operate." },
+        { "q": "Can you publish in Arabic and English?", "a": "Yes. The platform and content workflows support both languages end to end." },
+        { "q": "Which social platforms are supported?", "a": "Instagram, TikTok, and Facebook at launch—more coming soon." },
+        { "q": "Is editing included?", "a": "Yes—review, edit, and approve content before it goes live." },
+        { "q": "How fast can we start?", "a": "Most teams are live within a week after onboarding." }
+      ]
+    },
+    "cta": {
+      "title": "Ready to make marketing repeatable?",
+      "button": "Book a Demo"
+    },
+    "seo": {
+      "title": "AurasFlow Services",
+      "description": "Services that turn strategy into a repeatable growth system—automation, publishing, analytics, and training."
+    }
+  },
+  "pricingPage": {
+    "hero": {
+      "title": "Pricing that scales with your marketing",
+      "subtitle": "Pick a plan that turns your strategy into a repeatable growth system.",
+      "cta_primary": "Get started",
+      "cta_secondary": "Contact sales"
+    },
+    "plans": {
+      "title": "Choose your plan",
+      "period": "/ month",
+      "starter": {
+        "name": "Starter",
+        "desc": "For individuals and small brands starting systematic marketing.",
+        "features": [
+          "10 social posts / month",
+          "2 short videos / month",
+          "1 SEO article / month",
+          "Auto scheduling (1 brand)",
+          "Basic analytics dashboard",
+          "Email support"
+        ]
+      },
+      "professional": {
+        "name": "Professional",
+        "desc": "For teams that need velocity and clear reporting.",
+        "features": [
+          "30 social posts / month",
+          "8 short videos / month",
+          "4 SEO articles / month",
+          "Auto scheduling (up to 3 brands)",
+          "KPI dashboard + weekly insights",
+          "Priority support"
+        ]
+      },
+      "business": {
+        "name": "Business",
+        "desc": "For multi-brand or multi-market organizations.",
+        "features": [
+          "60 social posts / month",
+          "16 short videos / month",
+          "8 SEO articles / month",
+          "Auto scheduling (unlimited brands)",
+          "Marketing Health Score + custom reports",
+          "Dedicated success manager"
+        ]
+      },
+      "cta": "Start now"
+    },
+    "highlights": {
+      "title": "Everything you need to grow",
+      "items": [
+        "Strategy to calendar, in one place",
+        "AI content engine with your brand voice",
+        "Auto-schedule across Instagram & TikTok",
+        "SEO articles with topic clusters",
+        "Video shorts with captions & ratios",
+        "Unified KPIs and weekly insights",
+        "Marketing Health Score",
+        "Team workflows & approvals"
+      ]
+    },
+    "compare": {
+      "title": "Compare plans",
+      "rows": [
+        "Brands included",
+        "Social posts / month",
+        "Short videos / month",
+        "SEO articles / month",
+        "Auto scheduling & publishing",
+        "KPI dashboard",
+        "Weekly insights",
+        "Marketing Health Score",
+        "Priority support",
+        "Dedicated success manager"
+      ],
+      "values": {
+        "brands": ["1", "3", "Unlimited"],
+        "posts": ["10", "30", "60"],
+        "videos": ["2", "8", "16"],
+        "articles": ["1", "4", "8"],
+        "autoschedule": ["✓", "✓", "✓"],
+        "kpi": ["Basic", "Advanced", "Advanced + Custom"],
+        "insights": ["—", "✓", "✓"],
+        "score": ["—", "—", "✓"],
+        "priority": ["—", "✓", "✓"],
+        "manager": ["—", "—", "✓"]
+      }
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "items": [
+        { "q": "Can I switch plans later?", "a": "Yes. You can upgrade or downgrade anytime and changes apply to the next billing cycle." },
+        { "q": "Do you support Arabic and English?", "a": "Yes—AurasFlow supports bilingual workflows end to end." },
+        { "q": "Which social platforms are supported?", "a": "Instagram, TikTok, and Facebook at launch—more coming soon." },
+        { "q": "Is editing included?", "a": "Yes—review and edit before publishing." },
+        { "q": "Do you offer onboarding?", "a": "Yes—training and setup are included in Professional and Business." }
+      ]
+    },
+    "cta": {
+      "title": "Ready to grow with AurasFlow?",
+      "button": "Book a demo"
+    },
+    "seo": {
+      "title": "Pricing — AurasFlow",
+      "description": "Simple plans that turn your marketing into a repeatable system—content automation, scheduling, analytics, and more."
+    }
+  },
+  "projectDashboard": {
+    "subtitle": "Manage your social media project with advanced analytics and insights",
+    "overview": {
+      "title": "Project Overview",
+      "edit": "Edit project"
+    },
+    "kpis": {
+      "planned": "Planned posts",
+      "published": "Published posts",
+      "remaining": "Remaining posts",
+      "completion": "Completion",
+      "reach": "Reach",
+      "engagement": "Engagement rate",
+      "ctr": "Click-through rate",
+      "cpa": "Cost per acquisition",
+      "followers": "Followers gained",
+      "avgPerformance": "Avg. post performance"
+    },
+    "plan": {
+      "title": "Current Month Plan",
+      "period": "{{start}} → {{end}}",
+      "summary": "Overview",
+      "analysis": "Current analysis",
+      "goal": "Goal",
+      "open": "View full plan"
+    },
+    "progress": { "title": "Progress" },
+    "posts": {
+      "title": "Posts",
+      "newPost": "Create New Post",
+      "editPost": "Edit Post",
+      "add": "Add Post",
+      "search": "Search posts...",
+      "filter": { "all": "All", "planned": "Planned", "scheduled": "Scheduled", "published": "Published", "draft": "Draft" },
+      "table": { "title": "Title", "channel": "Channel", "status": "Status", "date": "Date", "actions": "Actions", "edit": "Edit", "view": "View" }
+    },
+    "editor": {
+      "title_new": "New Post",
+      "title_edit": "Edit Post",
+      "fields": { "title": "Title", "channel": "Channel", "status": "Status", "scheduledAt": "Scheduled at", "caption": "Caption" },
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "activity": {
+      "title": "Activity Log",
+      "empty": "No recent activity"
+    },
+    "cta": {
+      "report": "Download report"
+    }
+  }
+}

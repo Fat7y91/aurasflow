@@ -1,7 +1,6 @@
 import { Cairo, Inter } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
-import { cookies } from 'next/headers';
-import Navbar from '../components/Navbar';
+import ClientWrapper from '../components/ClientWrapper';
 import '../src/app/globals.css';
 
 // Load fonts
@@ -17,27 +16,19 @@ const inter = Inter({
   display: 'swap',
 });
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  // Read language from cookie on server side
-  const cookieStore = await cookies();
-  const savedLanguage = cookieStore.get('language')?.value || 'ar';
-  const direction = savedLanguage === 'ar' ? 'rtl' : 'ltr';
-  const fontClass = savedLanguage === 'ar' ? cairo.className : inter.className;
-  const fontVar = savedLanguage === 'ar' ? 'font-ar' : 'font-en';
-
   return (
     <html 
-      lang={savedLanguage} 
-      dir={direction} 
-      className={`${cairo.variable} ${inter.variable} ${fontVar}`}
+      lang="ar" 
+      dir="rtl" 
+      className={`${cairo.variable} ${inter.variable}`}
     >
-      <body className={`${fontClass} ${fontVar} transition-all duration-300`}>
-        <Navbar />
-        <main className="min-h-screen">
+            <body className={`transition-all duration-300`}>
+        <ClientWrapper>
           {children}
-        </main>
+        </ClientWrapper>
         <Toaster
           position="top-right"
           toastOptions={{

@@ -1,349 +1,432 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useTranslations } from '../lib/i18n';
+import { useEffect, useRef, useState } from 'react';
+import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import Navbar from '../components/Navbar';
 
-// Animation variants
-const fadeInUp = {
-  initial: { opacity: 0, y: 60 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6 }
-};
+// Animated Counter Component
+function AnimatedCounter({ end, duration = 2000, suffix = '' }: { end: number; duration?: number; suffix?: string }) {
+  const [count, setCount] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true });
 
-const staggerContainer = {
-  animate: {
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
-
-const scaleIn = {
-  initial: { opacity: 0, scale: 0.8 },
-  animate: { opacity: 1, scale: 1 },
-  transition: { duration: 0.5 }
-};
-
-export default function Home() {
-  const [language, setLanguage] = useState<'ar' | 'en'>('ar');
-  const [mounted, setMounted] = useState(false);
-
-  // Load saved language preference
   useEffect(() => {
-    setMounted(true);
-    const savedLang = localStorage.getItem('language') as 'ar' | 'en' || 'ar';
-    setLanguage(savedLang);
-  }, []);
-
-  // Translations
-  const translations = {
-    ar: {
-      hero: {
-        title: 'مرحباً بك في أوراس فلو',
-        subtitle: 'منصة شاملة لإدارة المشاريع والتعاون',
-        description: 'نقدم حلولاً مبتكرة لإدارة مشاريعك بكفاءة عالية مع فريق عمل متخصص',
-        cta: 'ابدأ الآن',
-        learnMore: 'اعرف المزيد'
-      },
-      features: {
-        title: 'لماذا أوراس فلو؟',
-        subtitle: 'مميزات تجعلنا الخيار الأفضل لمشروعك',
-        items: [
-          {
-            title: 'إدارة متقدمة',
-            description: 'أدوات متطورة لتتبع وإدارة جميع جوانب مشروعك',
-            icon: 'management'
-          },
-          {
-            title: 'تعاون فعال',
-            description: 'منصة موحدة للتواصل والتعاون بين أعضاء الفريق',
-            icon: 'collaboration'
-          },
-          {
-            title: 'تقارير ذكية',
-            description: 'تحليلات وتقارير مفصلة لمتابعة الأداء والتقدم',
-            icon: 'analytics'
-          },
-          {
-            title: 'أمان عالي',
-            description: 'حماية متقدمة لبياناتك مع نسخ احتياطية آمنة',
-            icon: 'security'
-          }
-        ]
-      },
-      stats: {
-        title: 'أرقام تتحدث عن نفسها',
-        items: [
-          { number: '500+', label: 'مشروع مكتمل' },
-          { number: '100+', label: 'عميل راضٍ' },
-          { number: '24/7', label: 'دعم فني' },
-          { number: '99%', label: 'معدل الرضا' }
-        ]
-      },
-      cta: {
-        title: 'جاهز لبدء مشروعك؟',
-        subtitle: 'انضم إلى مئات العملاء الذين اختاروا أوراس فلو',
-        button: 'ابدأ مجاناً'
-      }
-    },
-    en: {
-      hero: {
-        title: 'Welcome to AurasFlow',
-        subtitle: 'Complete platform for project management and collaboration',
-        description: 'We provide innovative solutions to manage your projects efficiently with a specialized team',
-        cta: 'Get Started',
-        learnMore: 'Learn More'
-      },
-      features: {
-        title: 'Why AurasFlow?',
-        subtitle: 'Features that make us the best choice for your project',
-        items: [
-          {
-            title: 'Advanced Management',
-            description: 'Sophisticated tools to track and manage all aspects of your project',
-            icon: 'management'
-          },
-          {
-            title: 'Effective Collaboration',
-            description: 'Unified platform for communication and collaboration between team members',
-            icon: 'collaboration'
-          },
-          {
-            title: 'Smart Reports',
-            description: 'Detailed analytics and reports to monitor performance and progress',
-            icon: 'analytics'
-          },
-          {
-            title: 'High Security',
-            description: 'Advanced protection for your data with secure backups',
-            icon: 'security'
-          }
-        ]
-      },
-      stats: {
-        title: 'Numbers speak for themselves',
-        items: [
-          { number: '500+', label: 'Completed Projects' },
-          { number: '100+', label: 'Satisfied Clients' },
-          { number: '24/7', label: 'Technical Support' },
-          { number: '99%', label: 'Satisfaction Rate' }
-        ]
-      },
-      cta: {
-        title: 'Ready to start your project?',
-        subtitle: 'Join hundreds of clients who chose AurasFlow',
-        button: 'Start Free'
-      }
+    if (inView && !hasAnimated) {
+      setHasAnimated(true);
+      let startTime: number;
+      
+      const animate = (currentTime: number) => {
+        if (!startTime) startTime = currentTime;
+        const progress = Math.min((currentTime - startTime) / duration, 1);
+        
+        // Easing function for smooth animation
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        setCount(Math.floor(end * easeOut));
+        
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      };
+      
+      requestAnimationFrame(animate);
     }
-  };
-
-  const t = translations[language];
-
-  // Feature icons
-  const getFeatureIcon = (iconType: string) => {
-    const icons = {
-      management: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v6a2 2 0 002 2h6a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-        </svg>
-      ),
-      collaboration: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
-      ),
-      analytics: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-        </svg>
-      ),
-      security: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-        </svg>
-      )
-    };
-    return icons[iconType as keyof typeof icons] || icons.management;
-  };
-
-  if (!mounted) return null;
+  }, [inView, end, duration, hasAnimated]);
 
   return (
-    <div className="min-h-screen bg-gradient-hero">
-      <Navbar />
-      
+    <span ref={ref} className="tabular-nums">
+      {count}{suffix}
+    </span>
+  );
+}
+
+export default function HomePage() {
+  const { t, locale, changeLocale, isRTL } = useTranslations();
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        delayChildren: 0.3,
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.5
+      }
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header Spacing */}
+      <div className="pt-header" />
+
       {/* Hero Section */}
-      <section className="relative pt-24 pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
+      <section className="relative min-h-screen bg-hero-gradient flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
-            variants={staggerContainer}
-            initial="initial"
-            animate="animate"
-            className="text-center"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="space-y-8"
           >
-            <motion.h1
-              variants={fadeInUp}
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight"
+            <motion.h1 
+              variants={itemVariants}
+              className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight"
             >
-              {t.hero.title}
+              {t('home.hero.title')}
             </motion.h1>
             
-            <motion.p
-              variants={fadeInUp}
-              className="text-xl sm:text-2xl text-white/90 mb-4 max-w-3xl mx-auto"
+            <motion.p 
+              variants={itemVariants}
+              className="text-lg md:text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed"
             >
-              {t.hero.subtitle}
+              {t('home.hero.subtitle')}
             </motion.p>
-            
-            <motion.p
-              variants={fadeInUp}
-              className="text-lg text-white/80 mb-12 max-w-2xl mx-auto"
-            >
-              {t.hero.description}
-            </motion.p>
-            
-            <motion.div
-              variants={fadeInUp}
+
+            <motion.div 
+              variants={itemVariants}
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
-              <Link
+              <Link 
                 href="/register"
-                className="bg-gradient-button text-white font-semibold px-8 py-4 rounded-glass text-lg hover:shadow-button hover:transform hover:-translate-y-1 transition-all duration-300"
+                className="bg-white text-purple-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl"
               >
-                {t.hero.cta}
+                {t('home.hero.ctaPrimary')}
               </Link>
-              <button className="bg-white/10 border-2 border-white/30 text-white font-semibold px-8 py-4 rounded-glass text-lg hover:bg-white/20 transition-all duration-300">
-                {t.hero.learnMore}
-              </button>
+              <Link 
+                href="#features"
+                className="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-purple-600 transition-all duration-300 transform hover:-translate-y-1"
+              >
+                {t('home.hero.ctaSecondary')}
+              </Link>
             </motion.div>
           </motion.div>
         </div>
-        
-        {/* Decorative Elements */}
-        <div className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
-        <div className="absolute bottom-20 right-10 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
-        <div className="absolute top-40 right-20 w-16 h-16 bg-white/10 rounded-full blur-lg"></div>
+
+        {/* Scroll Indicator */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1, duration: 0.5 }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        >
+          <div className="w-6 h-10 border-2 border-white/60 rounded-full flex justify-center">
+            <motion.div
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="w-1 h-3 bg-white/60 rounded-full mt-2"
+            />
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-8"
+          >
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-purple-600 mb-2">
+                <AnimatedCounter end={350} suffix="+" />
+              </div>
+              <p className="text-gray-600">{t('home.counters.companies')}</p>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-purple-600 mb-2">
+                <AnimatedCounter end={2500} suffix="+" />
+              </div>
+              <p className="text-gray-600">{t('home.counters.projects')}</p>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-purple-600 mb-2">
+                <AnimatedCounter end={92} suffix="%" />
+              </div>
+              <p className="text-gray-600">{t('home.counters.satisfaction')}</p>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-purple-600 mb-2">
+                <AnimatedCounter end={24} suffix="h" />
+              </div>
+              <p className="text-gray-600">{t('home.counters.support')}</p>
+            </div>
+          </motion.div>
+        </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white/10 backdrop-blur-glass">
-        <div className="max-w-7xl mx-auto">
+      <section id="features" className="py-20 bg-gray-50 scroll-mt-header">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              {t.features.title}
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              {t('home.features.title')}
             </h2>
-            <p className="text-xl text-white/80 max-w-2xl mx-auto">
-              {t.features.subtitle}
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              {t('home.features.subtitle')}
             </p>
           </motion.div>
-          
-          <motion.div
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
-          >
-            {t.features.items.map((feature, index) => (
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                title: t('home.features.f1'),
+                description: t('home.features.d1')
+              },
+              {
+                title: t('home.features.f2'),
+                description: t('home.features.d2')
+              },
+              {
+                title: t('home.features.f3'),
+                description: t('home.features.d3')
+              }
+            ].map((feature, index) => (
               <motion.div
                 key={index}
-                variants={scaleIn}
-                className="bg-white/15 backdrop-blur-glass-strong border border-border-glass rounded-card p-6 text-center hover:bg-white/20 hover:transform hover:-translate-y-2 transition-all duration-300 group"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
               >
-                <div className="w-16 h-16 bg-gradient-button rounded-xl flex items-center justify-center mx-auto mb-4 text-white group-hover:scale-110 transition-transform duration-300">
-                  {getFeatureIcon(feature.icon)}
+                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-6">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-3">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">
                   {feature.title}
                 </h3>
-                <p className="text-white/70 leading-relaxed">
+                <p className="text-gray-600 leading-relaxed">
                   {feature.description}
                 </p>
               </motion.div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
+      {/* Pricing Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              {t.stats.title}
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              {t('home.pricing.title')}
             </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              {t('home.pricing.subtitle')}
+            </p>
           </motion.div>
-          
-          <motion.div
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-8"
-          >
-            {t.stats.items.map((stat, index) => (
+
+          <div className={`grid md:grid-cols-3 gap-8 ${isRTL ? 'md:grid-flow-col-reverse' : ''}`}>
+            {[
+              {
+                key: 'starter',
+                price: t('home.pricing.starter.priceUSD'),
+                name: t('home.pricing.starter.name'),
+                features: [
+                  t('home.pricing.starter.b1'),
+                  t('home.pricing.starter.b2'),
+                  t('home.pricing.starter.b3'),
+                  t('home.pricing.starter.b4')
+                ]
+              },
+              {
+                key: 'pro',
+                price: t('home.pricing.pro.priceUSD'),
+                name: t('home.pricing.pro.name'),
+                isPopular: true,
+                features: [
+                  t('home.pricing.pro.b1'),
+                  t('home.pricing.pro.b2'),
+                  t('home.pricing.pro.b3'),
+                  t('home.pricing.pro.b4')
+                ]
+              },
+              {
+                key: 'business',
+                price: t('home.pricing.business.priceUSD'),
+                name: t('home.pricing.business.name'),
+                features: [
+                  t('home.pricing.business.b1'),
+                  t('home.pricing.business.b2'),
+                  t('home.pricing.business.b3'),
+                  t('home.pricing.business.b4')
+                ]
+              }
+            ].map((plan, index) => (
               <motion.div
-                key={index}
-                variants={fadeInUp}
-                className="text-center"
+                key={plan.key}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                className={`bg-white p-8 rounded-2xl border-2 relative transform hover:-translate-y-2 transition-all duration-300 ${
+                  plan.isPopular 
+                    ? 'border-purple-500 shadow-2xl scale-105' 
+                    : 'border-gray-200 shadow-lg hover:shadow-xl'
+                }`}
               >
-                <div className="text-4xl sm:text-5xl font-bold text-white mb-2">
-                  {stat.number}
+                {plan.isPopular && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full text-sm font-semibold">
+                      {t('home.pricing.pro.badge')}
+                    </span>
+                  </div>
+                )}
+                
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                    {plan.name}
+                  </h3>
+                  <div className="mb-4">
+                    <span className="text-4xl font-bold text-gray-900">
+                      ${plan.price}
+                    </span>
+                    <span className="text-gray-600 text-lg">
+                      /month
+                    </span>
+                  </div>
+                  <p className="text-gray-600">
+                    {t('home.pricing.subtitleUSD')}
+                  </p>
                 </div>
-                <div className="text-white/80 text-lg">
-                  {stat.label}
-                </div>
+
+                <ul className="space-y-4 mb-8">
+                  {plan.features.map((feature, featureIndex) => (
+                    <li key={featureIndex} className="flex items-center">
+                      <svg className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-gray-700">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <button className={`w-full py-3 px-6 rounded-xl font-semibold transition-all duration-300 ${
+                  plan.isPopular
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:shadow-xl transform hover:-translate-y-1'
+                    : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                }`}>
+                  Get Started
+                </button>
               </motion.div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white/10 backdrop-blur-glass">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="py-20 bg-gradient-to-r from-purple-600 to-pink-600">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
           >
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              {t.cta.title}
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+              {t('home.cta.title')}
             </h2>
-            <p className="text-xl text-white/80 mb-8">
-              {t.cta.subtitle}
+            <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+              {t('home.cta.subtitle')}
             </p>
-            <Link
+            <Link 
               href="/register"
-              className="inline-block bg-gradient-button text-white font-semibold px-10 py-4 rounded-glass text-lg hover:shadow-button hover:transform hover:-translate-y-1 transition-all duration-300"
+              className="inline-block bg-white text-purple-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl"
             >
-              {t.cta.button}
+              {t('home.cta.button')}
             </Link>
           </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-4 sm:px-6 lg:px-8 border-t border-white/20">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-white/60">
-            © 2024 {language === 'ar' ? 'أوراس فلو' : 'AurasFlow'}. {language === 'ar' ? 'جميع الحقوق محفوظة.' : 'All rights reserved.'}
-          </p>
+      <footer className="bg-gray-900 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <div className="text-2xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                AurasFlow
+              </div>
+              <p className="text-gray-400">
+                {t('home.footer.description')}
+              </p>
+            </div>
+            
+            <div>
+              <h4 className="text-lg font-semibold mb-4">{t('home.footer.product')}</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link href="#features" className="hover:text-white transition-colors">{t('home.footer.features')}</Link></li>
+                <li><Link href="#pricing" className="hover:text-white transition-colors">{t('home.footer.pricing')}</Link></li>
+                <li><Link href="/projects" className="hover:text-white transition-colors">{t('home.footer.projects')}</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-lg font-semibold mb-4">{t('home.footer.company')}</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link href="/about" className="hover:text-white transition-colors">{t('home.footer.about')}</Link></li>
+                <li><Link href="/contact" className="hover:text-white transition-colors">{t('home.footer.contact')}</Link></li>
+                <li><Link href="/support" className="hover:text-white transition-colors">{t('home.footer.support')}</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-lg font-semibold mb-4">{t('home.footer.legal')}</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link href="/privacy" className="hover:text-white transition-colors">{t('home.footer.privacy')}</Link></li>
+                <li><Link href="/terms" className="hover:text-white transition-colors">{t('home.footer.terms')}</Link></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 pt-8">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <p className="text-gray-400">
+                {t('home.footer.copyright')}
+              </p>
+              <div className="flex items-center gap-4 mt-4 md:mt-0">
+                <button
+                  onClick={() => changeLocale(locale === 'ar' ? 'en' : 'ar')}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                  </svg>
+                  <span>{locale === 'ar' ? 'English' : 'العربية'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </footer>
     </div>

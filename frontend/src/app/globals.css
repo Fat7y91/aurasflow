@@ -3,6 +3,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
+  /* Header spacing */
+  --header-h: 64px;
+  
   /* Canva design system colors */
   --color-primary: #667eea;
   --color-secondary: #764ba2;
@@ -11,7 +14,7 @@
   --color-card: rgba(255, 255, 255, 0.15);
   --color-border: rgba(255, 255, 255, 0.2);
   --color-muted: rgba(255, 255, 255, 0.7);
-  --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-hero: linear-gradient(180deg, #7B5CE6 0%, #F28AC0 100%);
   --gradient-button: linear-gradient(135deg, #60a5fa, #3b82f6);
   --radius-lg: 16px;
   --radius-xl: 20px;
@@ -47,6 +50,84 @@ body {
   direction: rtl;
   text-align: right;
   font-family: 'Cairo', Arial, sans-serif;
+}
+
+[dir="ltr"] {
+  direction: ltr;
+  text-align: left;
+  font-family: 'Inter', Arial, sans-serif;
+}
+
+/* Enhanced Arabic font support */
+.font-arabic {
+  font-family: 'Cairo', Arial, sans-serif;
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced hover effects */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Animated gradient background */
+.bg-animated-gradient {
+  background: linear-gradient(
+    -45deg,
+    #667eea,
+    #764ba2,
+    #60a5fa,
+    #3b82f6
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Enhanced glass morphism */
+.glass-enhanced {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Pulse animation for popular badge */
+.pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulseGlow {
+  from {
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+  }
+  to {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+  }
 }
 
 [dir="ltr"] {
@@ -205,4 +286,18 @@ html {
 .mobile-menu-overlay.show {
   opacity: 1;
   visibility: visible;
+}
+
+/* Header spacing utilities */
+.pt-header {
+  padding-top: var(--header-h);
+}
+
+.scroll-mt-header {
+  scroll-margin-top: var(--header-h);
+}
+
+/* Gradient utilities */
+.bg-hero-gradient {
+  background: var(--gradient-hero);
 }

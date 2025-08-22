@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "logo": "AurasFlow",
+    "home": "Home",
+    "services": "Services", 
+    "pricing": "Pricing",
+    "projects": "Projects",
+    "login": "Login",
+    "register": "Register",
+    "dashboard": "Dashboard",
+    "logout": "Logout",
+    "menu": "Menu",
+    "switchLanguage": "Switch Language"
+  },
+  "home": {
+    "hero": {
+      "title": "Transform Your Workflow with AurasFlow",
+      "subtitle": "A smart platform for project management and collaboration. Bring your team together, plan projects, and track progress in one place—with simple automation and instant reports that boost clarity and speed.",
+      "ctaPrimary": "Start Free",
+      "ctaSecondary": "Learn More",
+      "discover": "Discover more"
+    },
+    "features": {
+      "title": "Why teams choose AurasFlow",
+      "subtitle": "Smart project management that adapts to your workflow",
+      "f1": "Smart Planning",
+      "d1": "Break down complex projects into manageable tasks with AI-powered suggestions.",
+      "f2": "Real-time Tracking", 
+      "d2": "Monitor progress instantly with visual dashboards and automatic updates.",
+      "f3": "Team Collaboration",
+      "d3": "Keep everyone aligned with seamless communication and file sharing."
+    },
+    "counters": {
+      "companies": "Active Companies",
+      "projects": "Completed Projects", 
+      "satisfaction": "Customer Satisfaction",
+      "support": "Email Support"
+    },
+    "pricing": {
+      "title": "Plans that fit your team",
+      "subtitleUSD": "Currency: USD. Start in minutes.",
+      "starter": {
+        "name": "Starter", 
+        "priceUSD": "9", 
+        "b1": "Up to 5 projects", 
+        "b2": "10 members", 
+        "b3": "Basic reports", 
+        "b4": "Email support"
+      },
+      "pro": {
+        "name": "Professional", 
+        "badge": "Most popular", 
+        "priceUSD": "19",
+        "b1": "Unlimited projects", 
+        "b2": "50 members", 
+        "b3": "Advanced reports", 
+        "b4": "Light automation"
+      },
+      "business": {
+        "name": "Business", 
+        "priceUSD": "39",
+        "b1": "Unlimited projects", 
+        "b2": "100 members", 
+        "b3": "Integrations", 
+        "b4": "Priority support"
+      }
+    },
+    "cta": {
+      "title": "Ready to transform your workflow?",
+      "subtitle": "Join thousands of teams already using AurasFlow to deliver projects faster.",
+      "button": "Start Free Today"
+    },
+    "footer": {
+      "description": "Smart project management for modern teams.",
+      "product": "Product",
+      "features": "Features",
+      "pricing": "Pricing", 
+      "projects": "Projects",
+      "company": "Company",
+      "about": "About",
+      "contact": "Contact",
+      "support": "Support",
+      "legal": "Legal",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "copyright": "© 2025 AurasFlow. All rights reserved."
+    }
+  }
+}
